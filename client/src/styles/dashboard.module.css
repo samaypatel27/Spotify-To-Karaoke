@@ -1,0 +1,52 @@
+#userImage {
+    object-fit: contain !important;
+}
+
+.setBodyHeight {
+    height: 100vh !important;
+}
+
+.tabOverride {
+    color: #A9A9A9;
+    font-weight: bold;
+    
+}
+#card {
+    height: max-content;
+}
+.nextLine {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 3vh;
+}
+.inLine {
+    display: flex;
+    justify-content: center;
+    gap: 1vh;
+}
+#userProfile {
+    border-radius: 50%;
+    width: 15vh;
+    object-fit:cover;
+    object-position: center;
+}
+.scrollableContainer {
+    height: 65vh !important;
+    overflow-y: auto !important;
+}
+.cardClicked {
+    background-color: #1a1a1a !important; /* Dark black background */
+    color: #ffffff !important; /* White text for contrast */
+    transform: translateY(-4px) !important; /* Subtle lift effect */
+    box-shadow: 
+        rgba(0, 0, 0, 0.25) 0px 4px 8px,
+        rgba(0, 0, 0, 0.15) 0px 8px 16px,
+        rgba(0, 0, 0, 0.1) 0px 16px 32px !important; 
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important; /* Smooth animation */
+    border-radius: 8px !important; /* Rounded corners for modern look */
+}
+#roundedButton {
+    border: 1px solid white !important;
+    border-radius: 25px !important;
+}

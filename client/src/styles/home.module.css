@@ -1,0 +1,18 @@
+#homePage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+.section1 {
+    max-width: 100vh;
+    text-align: center;
+}
+#spotifyBTN {
+    /* background-color: var(--spotify-color) !important; */
+    border: none !important;
+}
+#signInCTA {
+    margin-left: 1vh;
+    color: var(--text-color) !important;
+}

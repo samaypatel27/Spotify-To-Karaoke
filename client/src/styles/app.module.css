@@ -1,0 +1,9 @@
+:root {
+    --text-color: rgb(255, 255, 255);
+    --spotify-color: #1ED760;
+}
+body {
+    color: var(--text-color) !important;
+    background: linear-gradient(135deg, #405CD5 0%, #955FAE 100%);
+    min-height: 100vh;
+}
