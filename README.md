@@ -4,7 +4,7 @@ From there, the user can select specific songs, and convert their playlist into 
 do plan to in the future.
 
 # Stacks
-Front-End: React.js, CSS, Bootstrap
+Front-End: React.js, CSS, Bootstrap <br>
 Back-End: Python (Flask), SQLite
 
 # Disclaimer
