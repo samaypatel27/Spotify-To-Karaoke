@@ -34,7 +34,15 @@
 .scrollableContainer {
     height: 65vh !important;
     overflow-y: auto !important;
+    
+    scrollbar-width: none !important; 
+    -ms-overflow-style: none !important;
 }
+
+.scrollableContainer::-webkit-scrollbar {
+    display: none !important; 
+}
+
 .cardClicked {
     background-color: #1a1a1a !important; /* Dark black background */
     color: #ffffff !important; /* White text for contrast */
@@ -49,4 +57,26 @@
 #roundedButton {
     border: 1px solid white !important;
     border-radius: 25px !important;
+}
+
+/* To make placeholder text white (found on stack overflow) */
+::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color: var(--placeholder-color);
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+   color: var(--placeholder-color);
+   opacity:  1;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+   color: var(--placeholder-color);
+   opacity:  1;
+}
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+   color: var(--placeholder-color);
+}
+::-ms-input-placeholder { /* Microsoft Edge */
+   color: var(--placeholder-color);
+}
+::placeholder { /* Most modern browsers support this now. */
+   color: var(--placeholder-color);
 }

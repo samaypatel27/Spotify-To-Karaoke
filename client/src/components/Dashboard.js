@@ -3,6 +3,7 @@ import axios from 'axios';
 import style from "../styles/dashboard.module.css";
 import defaultPlaylistCover from "../images/spotify.jpg";
 import formContext from "../context/FormContext.js";
+import themeContext from "../context/ThemeContext.js";
 import {useNavigate} from "react-router-dom";
 
 const Dashboard = () => {
@@ -11,6 +12,7 @@ const Dashboard = () => {
   const [user, setUser] = useState([]);
   const [songs, setSongs] = useState([]);
   const {state, dispatch} = useContext(formContext);
+  const {theme, toggleTheme} = useContext(themeContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -85,7 +87,10 @@ const Dashboard = () => {
       }
 
   return (
-    <div>
+    <div className = "min-vh-100">
+      <div>
+
+      
       <ul className="nav nav-fill nav-tabs" role="tablist">
         <li className="nav-item" role="presentation">
           <a className="nav-link active" id="fill-tab-0" data-bs-toggle="tab" href="#fill-tabpanel-0" role="tab" aria-controls="fill-tabpanel-0" aria-selected="true">
@@ -103,6 +108,7 @@ const Dashboard = () => {
           </a>
         </li>
       </ul>
+      </div>
 
       <div className="tab-content pt-5" id="tab-content">
         {/* TAB 1: Welcome */}
@@ -124,9 +130,29 @@ const Dashboard = () => {
                         
                       </div>
                       <div className = "d-flex justify-content-center">
-                        <button type="button" class="btn btn-secondary px-5 w-50" id = {style.roundedButton}><i class="bi bi-gear-fill"></i>   Settings</button>
+                        {/* TIP: use d-flex justify center for button elements with icon and text,
+                        also use text-nowrap to make sure buttons children (elements) all stay on same line and add me-2 (gap for flex) */}
+                        <button type="button" class="d-flex align-items-center justify-content-center btn btn-secondary px-5 w-50 text-nowrap" data-bs-toggle="modal" data-bs-target="#settingsModal" id = {style.roundedButton}><i class="bi bi-gear-fill me-2"></i>   Settings</button>
+                        <div class="modal fade" id="settingsModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                          <div class="modal-dialog modal-sm">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="staticBackdropLabel">Settings</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+                              <div class="modal-body">
+                                <div class="form-check form-switch">
+                                  <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onChange = {toggleTheme}></input>
+                                  <label class="form-check-label" for="flexSwitchCheckDefault">Dark Mode</label>
+                                </div>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" data-bs-dismiss = "modal">Close</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                      
                     </div>
                   </div>
 
@@ -178,7 +204,16 @@ const Dashboard = () => {
                   
                 <div className="row gx-lg-5 align-items-center">
                   <div className="col-lg-6 mb-5 mb-lg-0">
-                    <h2>Your Playlists</h2>
+                    <h2 className = "text-center mb-3">Your Playlists</h2>
+                    <div className = "d-flex justify-content-center">
+                          <div class="position-relative mb-3 w-50">
+                      <input className="px-2 py-2 border rounded-2 w-100 bg-transparent text-white placeholder-white" 
+                            placeholder="Search Playlist" 
+                            type="text"></input>
+                      <i class="bi bi-search position-absolute top-50 end-0 translate-middle-y me-3 text-white"></i>
+                      </div>
+                    </div>
+                    
                     <div className={`border p-3 rounded row ${style.scrollableContainer}`}>
                       {playlists.length > 0 ? 
                         (
@@ -199,7 +234,16 @@ const Dashboard = () => {
                     </div>
                   </div>
                   <div className = "col-lg-6 mb-5 mb-lg-0">
-                    <h2>Songs</h2>
+                    <h2 className = "text-center mb-3">Songs</h2>
+                    <div className = "d-flex justify-content-center">
+                      <div class="position-relative mb-3 w-50">
+                      <input className="px-2 py-2 border rounded-2 w-100 bg-transparent text-white placeholder-white" 
+                            placeholder="Search Songs" 
+                            type="text"></input>
+                      <i class="bi bi-search position-absolute top-50 end-0 translate-middle-y me-3 text-white"></i>
+                    </div>
+                    </div>
+                    
                     <div className={`border p-3 rounded row ${style.scrollableContainer}`}>
                       {songs.length > 0 ? (
                         songs.map((song, index) => {
