@@ -1,7 +1,6 @@
 import React, {useState, useEffect, useContext} from 'react';
 import axios from 'axios';
 import formContext from "../context/FormContext.js";
-import axios from 'axios';
 
 const Process = () => {
     const {state, dispatch} = useContext(formContext);
@@ -20,79 +19,68 @@ const Process = () => {
 
     const createYouTubePlaylist = async (token) => {
         try {
-            axios.post('https://www.googleapis.com/youtube/v3/playlists?part=snippet,status', {
+            const response = await fetch('https://www.googleapis.com/youtube/v3/playlists?part=snippet,status', {
+                method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                     snippet: {
-                        title: state.np_name,
-                        description: state.np_description,
+                        title: state.np_name || 'Karaoke Playlist',
+                        description: state.np_description || 'Generated karaoke playlist from Spotify',
                         defaultLanguage: 'en'
                     },
                     status: {
-                        privacyStatus: state.np_public ? 'public' : 'private'
+                        privacyStatus: state.np_public ? 'public' : 'private' // public, private, or unlisted
                     }
-                    })
                 })
-                .then(response => {
-                    return response.data.id;
-                })
-                .catch(error => {
-                    console.log(error);
-                })
+            });
+
+            const data = await response.json();
+            if (data.error) {
+                throw new Error(data.error.message);
             }
-            catch(error) {
-                console.log(error);
-            }
-            // const response = await fetch('https://www.googleapis.com/youtube/v3/playlists?part=snippet,status', {
-            //     method: 'POST',
-            //     headers: {
-            //         'Authorization': `Bearer ${token}`,
-            //         'Content-Type': 'application/json'
-            //     },
-            //     body: JSON.stringify({
-            //         snippet: {
-            //             title: state.np_name || 'Karaoke Playlist',
-            //             description: state.np_description || 'Generated karaoke playlist from Spotify',
-            //             defaultLanguage: 'en'
-            //         },
-            //         status: {
-            //             privacyStatus: state.np_public ? 'public' : 'private'
-            //         }
-            //     })
-            // });
+            
+            return data.id;
+        } catch (error) {
+            console.error('Error creating playlist:', error);
+            throw error;
+        }
     };
 
     const searchYouTubeKaraoke = async (query, token) => {
         try {
-            const searchQuery = query + ' karaoke';
+            // Try different search terms for better karaoke results
+            const searchQueries = [
+                `${query} karaoke`,
+            ];
 
-            axios.get(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(searchQuery)}&type=video&maxResults=1&key=${token}`, {
-                headers: {
+            for (const searchQuery of searchQueries) {
+                const response = await fetch(
+                    `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(searchQuery)}&type=video&maxResults=1&key=${token}`,
+                    {
+                        headers: {
                             'Authorization': `Bearer ${token}`
                         }
-                })
-                .then(response => {
-                    if (response.data.items && response.data.items.length > 0)
-                    {
-                        return {
+                    }
+                );
+
+                const data = await response.json();
+                
+                if (data.items && data.items.length > 0) {
+                    return {
                         videoId: data.items[0].id.videoId,
                         title: data.items[0].snippet.title,
                         searchTerm: searchQuery
-                        };
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                })
-                .catch(error => {
-                    console.log(error);
-                })
+                    };
+                }
+            }
+            
+            // If no karaoke version found, return null
+            return null;
         } catch (error) {
-            console.log('Error searching YouTube:', error);
+            console.error('Error searching YouTube:', error);
             return null;
         }
     };

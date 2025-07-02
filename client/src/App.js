@@ -8,19 +8,22 @@ import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import '../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js';
 import '../node_modules/bootstrap-icons/font/bootstrap-icons.css';
 import {PlaylistDataProvider} from './context/FormContext.js';
-import genStyle from "./styles/app.module.css";
+import {ThemeContextProvider} from "./context/ThemeContext.js";
+import "./styles/app.module.css";
 
 
 const App = () => {
   return (
     <BrowserRouter>
     <PlaylistDataProvider>
-      <Routes>
-        <Route path = "/" element = {<Home />}></Route>
-        <Route path = "/user/dashboard" element = {<Dashboard />}></Route>
-        <Route path = "/user/create" element = {<Create />}></Route>
-        <Route path = "/user/process" element = {<Process />}></Route>
-      </Routes>
+      <ThemeContextProvider>
+        <Routes>
+          <Route path = "/" element = {<Home />}></Route>
+          <Route path = "/user/dashboard" element = {<Dashboard />}></Route>
+          <Route path = "/user/create" element = {<Create />}></Route>
+          <Route path = "/user/process" element = {<Process />}></Route>
+        </Routes>
+      </ThemeContextProvider>
     </PlaylistDataProvider>
     </BrowserRouter>
 

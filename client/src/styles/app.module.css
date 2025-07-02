@@ -1,9 +1,15 @@
 :root {
     --text-color: rgb(255, 255, 255);
     --spotify-color: #1ED760;
+    --placeholder-color: rgb(182, 229, 248);
 }
 body {
     color: var(--text-color) !important;
-    background: linear-gradient(135deg, #405CD5 0%, #955FAE 100%);
     min-height: 100vh;
+}
+.light {
+    background: linear-gradient(135deg, #405CD5 0%, #955FAE 100%);
+}
+.dark {
+    background: black;
 }

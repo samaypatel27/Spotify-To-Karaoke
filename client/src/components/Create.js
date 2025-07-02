@@ -89,7 +89,7 @@ const Create = () => {
     
     
     return (
-        <form id = "createForm" onSubmit = {handleSubmit}>
+        <form className = "min-vh-100" id = "createForm" onSubmit = {handleSubmit}>
             <div className = "col-12 mb-2">
                     <div className = "d-flex flex-column align-items-center gap-1 p-2 bg-light bg-opacity-25 rounded text-center">
                       <h3>Fill Out Required Fields</h3>
@@ -103,7 +103,7 @@ const Create = () => {
                         <div className="border p-3 rounded bg-light bg-opacity-25">
                             <div className="mb-3">
                                 <label htmlFor="formName" className="form-label">Playlist Name</label>
-                                <input defaultValue= {state.np_name + ' - insturmental'} onChange = {updateName} className="form-control" id="formName" aria-describedby="emailHelp"></input>
+                                <input defaultValue= {state.np_name + ' - Karaoke'} onChange = {updateName} className="form-control" id="formName" aria-describedby="emailHelp"></input>
                             </div>
                             <div className="mb-3">
                                 <label htmlFor="formDescription" className = "form-label">Description</label>
