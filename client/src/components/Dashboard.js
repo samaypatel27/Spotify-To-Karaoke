@@ -78,7 +78,21 @@ const Dashboard = () => {
             remove_np_query: query
           })
         }
-        console.log(state);
+      }
+
+      const filterPlaylist = (e) => {
+        let query = e.target.value;
+        console.log(query);
+        if (query.length > 0)
+        {
+            axios.get('http://localhost:5000/db/playlists?search=' + query)
+            .then(response => {
+              setPlaylists(response.data)
+            })
+            .catch(error => {
+              console.log(error);
+            })
+        }
       }
 
       const navigatePage = (e) => {
@@ -89,8 +103,6 @@ const Dashboard = () => {
   return (
     <div className = "min-vh-100">
       <div>
-
-      
       <ul className="nav nav-fill nav-tabs" role="tablist">
         <li className="nav-item" role="presentation">
           <a className="nav-link active" id="fill-tab-0" data-bs-toggle="tab" href="#fill-tabpanel-0" role="tab" aria-controls="fill-tabpanel-0" aria-selected="true">
@@ -209,7 +221,7 @@ const Dashboard = () => {
                           <div class="position-relative mb-3 w-50">
                       <input className="px-2 py-2 border rounded-2 w-100 bg-transparent text-white placeholder-white" 
                             placeholder="Search Playlist" 
-                            type="text"></input>
+                            type="text" onChange = {filterPlaylist}></input>
                       <i class="bi bi-search position-absolute top-50 end-0 translate-middle-y me-3 text-white"></i>
                       </div>
                     </div>
