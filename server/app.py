@@ -113,7 +113,7 @@ def syncData():
         name = playlist['name']
         url = playlist['external_urls']['spotify']
 
-        # make try catch
+        # make try catch (get the code from the spotify link because that link is the playlist id we will use in api calls)
         regex = re.search(r"https:\/\/open\.spotify\.com\/playlist\/([a-zA-Z0-9]+)", url)
         id = regex.group(1)
 
@@ -142,6 +142,14 @@ def syncData():
         playlist_image TEXT
     );
     """
+
+    createVirtualPlaylistTable = """
+    DROP TABLE IF EXISTS playlistsVirtual;
+
+    CREATE VIRTUAL TABLE playlistsVirtual
+    USING fts5 (playlist_id, playlist_name, playlist_image)
+    """
+
     createSongsTable = """
     DROP TABLE IF EXISTS songs;
 
@@ -157,13 +165,13 @@ def syncData():
     );
     """
 
+    cursor.executescript(createPlaylistTable)
+    cursor.executescript(createVirtualPlaylistTable)
+    cursor.executescript(createSongsTable)
+
     insertPlaylist = "INSERT INTO playlists VALUES (?, ?, ?)"
     insertSong = "INSERT INTO songs (song_name, song_artists, song_album, song_image, playlist_id) VALUES (?, ?, ?, ?, ?)"
 
-    cursor.executescript(createPlaylistTable)
-    cursor.executescript(createSongsTable)
-
-    
     for playlist_info in playlists:
         # adds playlist to database
         cursor.execute(insertPlaylist, (playlist_info['id'], playlist_info['name'], playlist_info['image']))
@@ -186,10 +194,51 @@ def syncData():
             # adds song to song database
             cursor.execute(insertSong, (song, artists, album, image_url, playlist_info['id']))
 
+
+    # now copy the table, once the playlist table has values in it
+    copyPlaylistTable = """
+    INSERT INTO playlistsVirtual (playlist_id, playlist_name, playlist_image)
+    SELECT playlist_id, playlist_name, playlist_image FROM playlists
+    """
+    cursor.executescript(copyPlaylistTable)
     connection.commit()
     connection.close()
     
     return playlists
+
+@app.route("/db/playlists", methods = {'GET'})
+def getPlaylists():
+    query = request.args.get('search') + '*'
+    connection = sqlite3.connect(currentDir + '\spotify.db')
+    cursor = connection.cursor()
+
+    selectPlaylists = f"""
+    SELECT playlist_name, playlist_id, playlist_image
+    FROM playlistsVirtual
+    WHERE playlistsVirtual MATCH "{query}"
+    """
+
+    cursor.execute(selectPlaylists)
+    playlists = cursor.fetchall()
+    
+    print(playlists)
+
+    arrayOfPlaylists = []
+    for item in playlists:
+        playlist = {
+            'id': item[1],
+            'name': item[0],
+            'image': item[2]
+        }
+        arrayOfPlaylists.append(playlist)
+
+    connection.commit()
+    connection.close()
+
+    print(arrayOfPlaylists)
+
+    return arrayOfPlaylists
+
 
 @app.route('/db/songs/<playlist_id>', methods = {'GET'})
 def getSongs(playlist_id):
@@ -220,11 +269,6 @@ def getSongs(playlist_id):
     return arrayOfSongs
 
 
-
-# queries will be request.args.get (use for /db/playlists) with query filtering
-@app.route('/db/playlists', methods = {'GET'})
-def getPlaylists():
-    print('hi')
     
 # creating a playlist: name,description, public/collaborative option, and option to upload image or use default
 
