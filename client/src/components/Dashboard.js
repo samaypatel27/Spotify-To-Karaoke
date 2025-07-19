@@ -5,11 +5,13 @@ import defaultPlaylistCover from "../images/spotify.jpg";
 import formContext from "../context/FormContext.js";
 import themeContext from "../context/ThemeContext.js";
 import {useNavigate} from "react-router-dom";
+import { ClipLoader } from 'react-spinners';
 
 const Dashboard = () => {
   // updating states causes the whole component to re-render
   const [playlists, setPlaylists] = useState([]);
   const [user, setUser] = useState([]);
+  const [userLoaded, setUserLoaded] = useState(false);
   const [songs, setSongs] = useState([]);
   const {state, dispatch} = useContext(formContext);
   const {theme, toggleTheme} = useContext(themeContext);
@@ -20,6 +22,7 @@ const Dashboard = () => {
       withCredentials: 'include'
     })
       .then(response => {
+        setUserLoaded(true)
         setUser(response.data[0])
       })
       .catch(error => {
@@ -83,16 +86,31 @@ const Dashboard = () => {
       const filterPlaylist = (e) => {
         let query = e.target.value;
         console.log(query);
-        if (query.length > 0)
-        {
-            axios.get('http://localhost:5000/db/playlists?search=' + query)
+        // if (query.length == 0)
+        // {
+        //     query = "THIS_IS_INVALID_QUERY"
+        // }
+        axios.get('http://localhost:5000/db/playlists?search=' + query)
             .then(response => {
               setPlaylists(response.data)
             })
             .catch(error => {
               console.log(error);
             })
-        }
+      }
+
+      const filterSong = (e) => {
+        let query = e.target.value;
+        // selects current playlist id for the parameter for the backend API route
+        const playlistID = state.op_id
+        axios.get('http://localhost:5000/db/songs/' + playlistID + '?search='+ query)
+            .then(response => {
+              setSongs(response.data)
+            })
+            .catch(error => {
+              console.log(error);
+            })
+        
       }
 
       const navigatePage = (e) => {
@@ -125,6 +143,22 @@ const Dashboard = () => {
       <div className="tab-content pt-5" id="tab-content">
         {/* TAB 1: Welcome */}
         <div className="tab-pane active" id="fill-tabpanel-0" role="tabpanel" aria-labelledby="fill-tab-0">
+          {
+            (!(userLoaded)) ? (
+               <div className = {`d-flex flex-column justify-content-center align-items-center ${style.loadingScreen}`}>
+                  <ClipLoader
+                  color="#ffffffff"
+                  loading={true}
+                  size={100}
+                  aria-label="Loading Spinner"
+                  data-testid="loader"
+                />
+                <div>
+                <h1>Fetching User Data...</h1>
+                </div>
+                </div>
+            ) : (
+          
           <section>
             <div className="px-4 py-5 px-md-5 text-center text-lg-start">
               <div className="container">
@@ -171,22 +205,21 @@ const Dashboard = () => {
                   <div className="col-lg-6 mb-5 mb-lg-0">
                     <div className="card">
                       <div className="card-body py-4 px-md-5">
-                        <h3>About the Creator</h3>
+                        <h3>Getting Started</h3>
                         <hr />
                         <p>Hello, welcome to my website! I am an incoming sophomore at The Ohio State 
                           University, pursuing a degree in Computer Science & Engineering. I am really passionate about web development, and this
-                          is my second full-stack application project. I came about this project when thinking about the type of music I should play when
-                          I am studying. Instead of manually creating instrumental playlists for the songs I like, I decided to create a centralized hub
-                          for anyone to use this automation for their own ability.
+                          is my second full-stack application project. This project was built with Spotify, YouTube API, and OAuth 2.0. information
+                          from your Spotify account is taken, and updated in real-time onto our website. Unfortunately, there is no way
+                          to have one sign in - so anytime you want to create a YouTube karaoke playlist you will have to login in to YouTube every
+                          single time. 
+                          
                         </p>
                         <h3>Using this website</h3>
                         <hr />
-                        <p>The View Playlists tab allows you to view playlists in your account. 
-                          That page has no actions, and is simply just for looking at your songs. The other tab, Create Playlist is 
-                          where you can begin your journey on your "new" instrumental
-                          playlist. First, you select a playlist to convert, then you will follow the directions as you are redirected to another page. Once
-                          you are completely done filling out everything, the website will process your request and automatically update that new playlist
-                          to your account!
+                        <p>
+                          Create - Allows you to select Songs from Spotify, then login to YouTube and create your playlist<hr></hr>
+                          View - A Dashboard that allows you to see your YouTube playlists that have been converted
                         </p>
                       </div>
                     </div>
@@ -195,7 +228,9 @@ const Dashboard = () => {
               </div>
             </div>
           </section>
+          )}
         </div>
+        
         
         {/* TAB 2: View Playlists */}
         <div className="tab-pane" id="fill-tabpanel-1" role="tabpanel" aria-labelledby="fill-tab-1">
@@ -250,7 +285,7 @@ const Dashboard = () => {
                     <div className = "d-flex justify-content-center">
                       <div class="position-relative mb-3 w-50">
                       <input className="px-2 py-2 border rounded-2 w-100 bg-transparent text-white placeholder-white" 
-                            placeholder="Search Songs" 
+                            placeholder="Search Songs" onChange = {filterSong} 
                             type="text"></input>
                       <i class="bi bi-search position-absolute top-50 end-0 translate-middle-y me-3 text-white"></i>
                     </div>

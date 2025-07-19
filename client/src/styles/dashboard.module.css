@@ -39,6 +39,10 @@
     -ms-overflow-style: none !important;
 }
 
+.loadingScreen {
+    height: 85vh !important;
+}
+
 .scrollableContainer::-webkit-scrollbar {
     display: none !important; 
 }

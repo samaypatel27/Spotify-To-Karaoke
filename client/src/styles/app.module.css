@@ -8,8 +8,8 @@ body {
     min-height: 100vh;
 }
 .light {
-    background: linear-gradient(135deg, #405CD5 0%, #955FAE 100%);
+    background: linear-gradient(135deg, #405CD5 0%, #955FAE 100%) !important;
 }
 .dark {
-    background: black;
+    background: black !important;
 }
