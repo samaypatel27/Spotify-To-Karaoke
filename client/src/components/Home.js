@@ -10,8 +10,8 @@ const Home = () => {
                     Transform Your Music
                 </h1>
                 <p>
-                    In just a few minutes, you will be able to transform your Spotify Playlists entirely into insturmental versions. Utilize
-                    our software to transform your study or karoke sessions in just a few clicks!
+                    In just a few minutes, you will be able to transform your Spotify Playlists entirely into YouTube Karaokes. Utilize
+                    this software to transform your parties or friend gatherings in seconds!
                 </p>
                 <a href = "http://localhost:5000/auth/login"><button className = "btn btn-success" id = {style.spotifyBTN}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-spotify" viewBox="0 0 16 16">

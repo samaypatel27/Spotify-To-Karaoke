@@ -1,3 +1,4 @@
+# BACKEND FILE: Routes for Spotify OAuth Login, Syncing and retrieving data from Spotify API & SQLite database
 from flask import Flask, request, url_for, session, redirect, jsonify
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
@@ -7,9 +8,6 @@ import json
 from flask_cors import CORS
 import sqlite3
 import os
-
-# IDEA: Light/dark mode for useCOntext API
-# only use redux Query
 
 currentDir = os.path.dirname(os.path.abspath(__file__))
 
@@ -24,24 +22,6 @@ app.secret_key = "dsjifj904jfe"
 app.config['SESSION_COOKIE_NAME'] = 'Samays Cookie'
 
 TOKEN_INFO = "token_info"
-
-# this is the first route executed as it is the default route when you run the local host
-@app.route('/testing')
-def test():
-    try:
-        token_info = get_token()
-    except:
-        print('You are not logged in. Redirecting...')
-        return redirect(url_for('autoLogin', _external=False))
-        # external is false because the spotify login is under the localhost:port url
-    
-    sp = spotipy.Spotify(auth=token_info['access_token'])
-
-    JSONObjects = sp.current_user_playlists(limit=50, offset=0)
-
-    user_info = sp.current_user()
-
-    return json.dumps(user_info)
 
 @app.route('/auth/login')
 def autoLogin():
@@ -66,6 +46,7 @@ def redirectPage():
     # url_for('getPlaylist') returns /getMusic
     # _extrnal=true attaches the new url (/getMusic) to localhost:Whatever port
 
+# route for getting user data from Spotify API
 @app.route('/spotify/user', methods = {'GET'})
 def getUser():
     try:
@@ -86,6 +67,7 @@ def getUser():
     user.append(user_info)
     return user
 
+# route for syncing data from Spotify API --> SQLite database
 @app.route('/spotify/sync', methods = {'POST'})
 def syncData():
     try:
@@ -165,9 +147,18 @@ def syncData():
     );
     """
 
+    createVirtualSongsTable = """
+    DROP TABLE IF EXISTS songsVirtual;
+
+    CREATE VIRTUAL TABLE songsVirtual
+    USING fts5 (song_id, song_name, song_artists, song_album, song_image, playlist_id)
+
+    """
+
     cursor.executescript(createPlaylistTable)
     cursor.executescript(createVirtualPlaylistTable)
     cursor.executescript(createSongsTable)
+    cursor.executescript(createVirtualSongsTable)
 
     insertPlaylist = "INSERT INTO playlists VALUES (?, ?, ?)"
     insertSong = "INSERT INTO songs (song_name, song_artists, song_album, song_image, playlist_id) VALUES (?, ?, ?, ?, ?)"
@@ -200,28 +191,39 @@ def syncData():
     INSERT INTO playlistsVirtual (playlist_id, playlist_name, playlist_image)
     SELECT playlist_id, playlist_name, playlist_image FROM playlists
     """
+    copySongTable = """
+    INSERT INTO songsVirtual (song_id, song_name, song_artists, song_album, song_image, playlist_id)
+    SELECT song_id, song_name, song_artists, song_album, song_image, playlist_id FROM songs
+    """
     cursor.executescript(copyPlaylistTable)
+    cursor.executescript(copySongTable)
     connection.commit()
     connection.close()
     
     return playlists
 
+# retrieve playlists from database
 @app.route("/db/playlists", methods = {'GET'})
 def getPlaylists():
-    query = request.args.get('search') + '*'
     connection = sqlite3.connect(currentDir + '\spotify.db')
     cursor = connection.cursor()
 
-    selectPlaylists = f"""
-    SELECT playlist_name, playlist_id, playlist_image
-    FROM playlistsVirtual
-    WHERE playlistsVirtual MATCH "{query}"
-    """
-
+    if len(request.args.get('search')) < 1:
+        selectPlaylists = f"""
+        SELECT playlist_name, playlist_id, playlist_image
+        FROM playlists
+        """
+    else:
+        query = request.args.get('search') + '*'
+        selectPlaylists = f"""
+        SELECT playlist_name, playlist_id, playlist_image
+        FROM playlistsVirtual
+        WHERE playlist_name MATCH "{query}"
+        """
+    
     cursor.execute(selectPlaylists)
     playlists = cursor.fetchall()
     
-    print(playlists)
 
     arrayOfPlaylists = []
     for item in playlists:
@@ -235,21 +237,32 @@ def getPlaylists():
     connection.commit()
     connection.close()
 
-    print(arrayOfPlaylists)
 
     return arrayOfPlaylists
 
-
+# retrieve songs from playlist
 @app.route('/db/songs/<playlist_id>', methods = {'GET'})
 def getSongs(playlist_id):
     connection = sqlite3.connect(currentDir + '\spotify.db')
     cursor = connection.cursor()
 
-    selectSongsFromPlaylist = """
-    SELECT song_id, song_name, song_artists, song_album, song_image
-    FROM songs
-    WHERE playlist_id = ?
-    """
+    if request.args.get('search') is None or len(request.args.get('search')) < 1:
+        print("There is no arguments")
+        selectSongsFromPlaylist = """
+        SELECT song_id, song_name, song_artists, song_album, song_image
+        FROM songs
+        WHERE playlist_id = ?
+        """
+    else:
+        print("There is arguments")
+        query = request.args.get('search') + '*'
+        selectSongsFromPlaylist = f"""
+        SELECT song_id, song_name, song_artists, song_album, song_image
+        FROM songsVirtual
+        WHERE (playlist_id = ? AND song_name MATCH "{query}")
+        """
+
+    
     cursor.execute(selectSongsFromPlaylist, (playlist_id,))
     songs = cursor.fetchall()
 
@@ -268,40 +281,6 @@ def getSongs(playlist_id):
     connection.close()
     return arrayOfSongs
 
-
-    
-# creating a playlist: name,description, public/collaborative option, and option to upload image or use default
-
-@app.route('/other')
-def something():
-    
-    print('Here are your Spotify Playlists:')
-    playlist_names = dict.keys()
-    # enumerate function to automatically increment an index
-    # use enumerate to generate object for next route where you pass in playlist and recieive song
-    # NEXT STEP: Create the front end, attaching login, then end method above after for loop by returning json to see and fetch data
-    for index, value in enumerate(playlist_names, start=1):
-        print('[', index, '] ', value)
-    match = re.search(r"https:\/\/open\.spotify\.com\/playlist\/([a-zA-Z0-9]+)", dict.get('car chill'))
-    id = match.group(1)
-
-    token_info = get_token()
-    sp = spotipy.Spotify(auth=token_info['access_token'])
-
-    # gets songs in playlist
-    results = sp.playlist_tracks(id)
-    return results['items']
-    
-
-    # number = input('Enter the playlist number you would like to convert into insturmentals:')
-    # query = "let me go insturmental"
-    # result = sp.search(q=query, type="track", limit=10)
-    # return result
-
-    playlistLink_arr = []
-
-    
-
 # check if there is token data. if there is not token data, we will redirect the users back to the login page
 def get_token():
     token_info = session.get(TOKEN_INFO, None)
@@ -318,7 +297,6 @@ def get_token():
         # creates a new token after refreshed
     return token_info
 
-    
    
 def create_spotify_oauth():
     return SpotifyOAuth(
@@ -327,8 +305,27 @@ def create_spotify_oauth():
         # retrieved from dashboard
         redirect_uri=url_for('redirectPage', _external=True),
         # calls the redirectPage route
-        scope="playlist-read-private playlist-modify-private playlist-modify-public user-read-private ugc-image-upload"
+        scope="playlist-modify-public ugc-image-upload",
+        cache_path = None
+        # playlist-read-private playlist-modify-private user-read-private
     )
 
 if (__name__) == "__main__":
     app.run(debug=True)
+
+# @app.route('/testing')
+# def test():
+#     try:
+#         token_info = get_token()
+#     except:
+#         print('You are not logged in. Redirecting...')
+#         return redirect(url_for('autoLogin', _external=False))
+#         # external is false because the spotify login is under the localhost:port url
+    
+#     sp = spotipy.Spotify(auth=token_info['access_token'])
+
+#     JSONObjects = sp.current_user_playlists(limit=50, offset=0)
+
+#     user_info = sp.current_user()
+
+#     return json.dumps(user_info)

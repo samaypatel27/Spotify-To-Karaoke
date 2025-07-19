@@ -18,6 +18,7 @@ const PlaylistDataProvider = ({children}) => {
     const reducer = (state, action) => {
         switch (action.type) {
             case 'SELECT_PLAYLIST':
+                console.log(state);
                 return {
                     ...state,
                     np_name: action.next_np_name,
