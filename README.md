@@ -52,7 +52,7 @@ Once the user is logged in to Spotify, these routes can be used. If these routes
 ```/youtube/playlists``` returns a link to a newly created YouTube Playlist. This is the route in charge of the conversion and creation of the YouTUbe Karaoke playlist. A body is required, and the body
 must be an array of strings, which represent the songs to search for. For now, each element in the array should represent a query that is like ' songName "-" artistName `<br>
 Example array in the frontend that can be passed in the body: ['Get You - Daniel Ceasar', 'Reality in Motion - Tame Impala']<br>
-You MUST also pass in 3 queries representing the title, description, and whether the created playlist will be public or not (this will act as a boolean)<br>
+You MUST also pass in 3 queries representing the title, description, is_public (a boolean)<br>
 Example query request (required for POST only): ```/youtube/playlists?title=myKaraokePlaylists&description=formyfriend&is_public=False```
 
 
