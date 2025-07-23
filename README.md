@@ -37,6 +37,7 @@ Once the user is logged in to Spotify, these routes can be used. If these routes
 ```/db/playlists``` returns an array of objects representing each playlist. Each object has these specific children: id, name, image.<br>
    You can optinally pass a query "search", but is not required. This performs full-text search on the playlists. Example: ```/db/playlist?search=drivingplaylist```<br>
 ```/db/songs/<playlist_id>``` pass a parameter of the playlist ID (can be retrieved from the route above) and returns an array of objects representing each song. Each object has these specific children: song_id, song_name, song_artists, song_album, song_image (NOTE: song_artists is a string an not an array of artists)<br>
+You can also search for specific songs by passing in a search query. Example: ```/db/songs/somerandomid?search=gravity```. Currently, the search feature only search's by song name, not artist or anything else, but that could change in the future.
 
 **POST:**
 ```/spotify/sync``` Uses Spotify API in the backend to put playlists and songs into SQLite database. Does not accept body in the front end. This must be called before ```/db/``` routes otherwise the database will be empty<br><br>
