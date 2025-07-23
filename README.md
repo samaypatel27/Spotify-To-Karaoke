@@ -36,7 +36,24 @@ Once the user is logged in to Spotify, these routes can be used. If these routes
 (if response.data[0] represents the object, response.data[0].userName is the username and response.data[0].image is the link to user's profile picture<br>
 ```/db/playlists``` returns an array of objects representing each playlist. Each object has these specific children: id, name, image.<br>
    You can optinally pass a query "search", but is not required. This performs full-text search on the playlists. Example: ```/db/playlist?search=drivingplaylist```<br>
-```/db/songs/<playlist_id>``` pass a parameter of the playlist ID (can be retrieved from the route above) and returns an array of objects representing each song. Each object has these specific children: song_id, song_name, song_artists, song_album, song_image (NOTE: song_artists is a string an not an array of artists)
+```/db/songs/<playlist_id>``` pass a parameter of the playlist ID (can be retrieved from the route above) and returns an array of objects representing each song. Each object has these specific children: song_id, song_name, song_artists, song_album, song_image (NOTE: song_artists is a string an not an array of artists)<br>
+
+**POST:**
+```/spotify/sync``` Uses Spotify API in the backend to put playlists and songs into SQLite database. Does not accept body in the front end. This must be called before ```/db/``` routes otherwise the database will be empty<br><br>
+
+<ins>YouTube Routes</ins>
+<br>
+**GET:**
+<br>
+```/youtube/playlists``` returns an array of objects of all of the youtube playlists. Each object has these specific children: id, title, description, thumbnail (thumbnail is a link to an image)
+<br>
+**POST:**
+<br>
+```/youtube/playlists``` returns a link to a newly created YouTube Playlist. This is the route in charge of the conversion and creation of the YouTUbe Karaoke playlist. A body is required, and the body
+must be an array of strings, which represent the songs to search for. For now, each element in the array should represent a query that is like ' songName "-" artistName `<br>
+Example array in the frontend that can be passed in the body: ['Get You - Daniel Ceasar', 'Reality in Motion - Tame Impala']<br>
+You MUST also pass in 3 queries representing the title, description, and whether the created playlist will be public or not (this will act as a boolean)<br>
+Example query request (required for POST only): ```/youtube/playlists?title=myKaraokePlaylists&description=formyfriend&is_public=False```
 
 
 
@@ -48,4 +65,5 @@ Once the user is logged in to Spotify, these routes can be used. If these routes
 
 
 # Disclaimer
-The publicity of this repository is for viewing and recuriting purposes only.
+SQLite only allows one write operation to allowed at a certain time. Therefore, if you are running the flask server previously and the end it, a SQLite connection is still maintained. When you reboot the server,
+write operations such as ```/spotify/sync``` will result in a connection already established error. However, this isn't important since anything in React's useEffect() runs twice in development mode, so after the error, the previous connection is broken and it will successful write to the SQLite db file the second time.
