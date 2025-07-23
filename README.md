@@ -46,7 +46,7 @@ Once the user is logged in to Spotify, these routes can be used. If these routes
 **GET:**
 <br>
 ```/youtube/playlists``` returns an array of objects of all of the youtube playlists. Each object has these specific children: id, title, description, thumbnail (thumbnail is a link to an image)
-<br>
+<br><br>
 **POST:**
 <br>
 ```/youtube/playlists``` returns a link to a newly created YouTube Playlist. This is the route in charge of the conversion and creation of the YouTUbe Karaoke playlist. A body is required, and the body
