@@ -11,12 +11,13 @@ Back-End: Python (Flask), SQLite
    Install dependencies after creating and activating your virtual environment: <br>```pip install Flask Flask-Cors requests spotipy google-auth google-auth-oauthlib```
 2. Download the _client_secret.json_ file and place it in the Server folder. This file contains information for the YouTube Data API and is accessed in the backend
 3. For development purposes, SQLite is used for storage. Download the **DB Browser for SQLite** app from the internet, or from the official website. Then, create a database file by selecting "create database" in the app and placing it in the Server folder
+4. Create a new client folder to use. Keep the old client folder.
 
 # Backend Routes
 <ins>Authentication</ins>
 <br>
 This backend was designed so that both Spotify and YouTube sessions/cookies are sent to the browser, but it is ideal to perform the Spotify login first on the front-end
-There are four variables that can be changed (All in CAPS) and is listed with the first 100 lines. The first two links below will redirect to a link specified in those variables.
+There are FIVE variables that can be changed (All in CAPS) and is listed with the first 100 lines. The first two links below will redirect to a link specified in those variables.
 <br>
 The backend runs on PORT 5000 and the frontend runs on PORT 3000, so include http://localhost:PORT/ in API calls in the front end, and redirect links to the front end (specified in variables mentioned above)
 <br>
