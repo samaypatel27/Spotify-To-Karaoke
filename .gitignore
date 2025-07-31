@@ -1,4 +1,3 @@
-server/.env
 server/myenv
 server/spotify.db
 server/spotify.sqbpro
