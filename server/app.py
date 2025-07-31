@@ -636,20 +636,3 @@ def create_spotify_oauth():
 
 if (__name__) == "__main__":
     app.run(debug=True)
-
-# @app.route('/testing')
-# def test():
-#     try:
-#         token_info = get_token()
-#     except:
-#         print('You are not logged in. Redirecting...')
-#         return redirect(url_for('autoLogin', _external=False))
-#         # external is false because the spotify login is under the localhost:port url
-    
-#     sp = spotipy.Spotify(auth=token_info['access_token'])
-
-#     JSONObjects = sp.current_user_playlists(limit=50, offset=0)
-
-#     user_info = sp.current_user()
-
-#     return json.dumps(user_info)
