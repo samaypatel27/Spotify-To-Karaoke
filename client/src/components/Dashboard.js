@@ -113,6 +113,33 @@ const Dashboard = () => {
         
       }
 
+      const logoutUser = () => {
+        axios.get('http://localhost:5000/auth/logout', {
+          withCredentials: 'include',
+        })
+          .then(response => {
+            window.location.href = "http://localhost:3000/"
+            // refresh to home page (clearing states) because the logout only displays on page refresh (data is already set here)
+          })
+          .catch(error => {
+            console.log(error);
+          })
+      }
+
+      const getYouTubePlaylists = () => {
+        axios.get('http://localhost:5000/youtube/playlists', {
+          // session is never server - it just created in flask but stored in browser, so we should send cookie information tot he server
+          withCredentials: 'include',
+
+        })
+          .then(response => {
+            console.log(response.data);
+          })
+          .catch(error => {
+            console.log(error);
+          })
+      }
+
       const navigatePage = (e) => {
         e.preventDefault();
         navigate("/user/create");
@@ -191,7 +218,16 @@ const Dashboard = () => {
                                   <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onChange = {toggleTheme}></input>
                                   <label class="form-check-label" for="flexSwitchCheckDefault">Dark Mode</label>
                                 </div>
+                                <hr>
+                                </hr>
+                                <button class = "btn btn-primary" onClick = {logoutUser}>Logout</button>
+                                <hr>
+                                </hr>
+                                <a class = "btn btn-primary" href = "http://localhost:5000/youtube/login">Login With YouTube</a>
                               </div>
+                              <hr></hr>
+                                <a class = "btn btn-primary" onClick = {getYouTubePlaylists}>Log YouTube Playlists</a>
+                              
                               <div class="modal-footer">
                                 <button type="button" class="btn btn-primary" data-bs-dismiss = "modal">Close</button>
                               </div>

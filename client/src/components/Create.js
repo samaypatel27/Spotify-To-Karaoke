@@ -62,28 +62,42 @@ const Create = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Use Google Identity Services for OAuth
-        const client = window.google.accounts.oauth2.initTokenClient({
-            client_id: '582096807393-bvs6akh56olvna85fat0run1vuuv63mc.apps.googleusercontent.com',
-            scope: 'https://www.googleapis.com/auth/youtube',
-            callback: (response) => {
-                if (response.error) {
-                    console.error('YouTube login failed:', response.error);
-                    return;
-                }
+        axios.post('http://localhost:5000/youtube/playlists?title=' + state.np_name + '&description=' + state.np_description + '&public=' + state.np_public, 
+            // Data payload (this is the body)
+            { songs: state.np_queries },
+            // Config options
+            { withCredentials: true }
+        )
+            .then(response => {
+                console.log(response.data);
+            })
+            .catch(error => { // Use .catch instead of .then for errors
+                console.log(error);
+            });
+                    
+            // e.preventDefault();
+        // // Use Google Identity Services for OAuth
+        // const client = window.google.accounts.oauth2.initTokenClient({
+        //     client_id: '582096807393-bvs6akh56olvna85fat0run1vuuv63mc.apps.googleusercontent.com',
+        //     scope: 'https://www.googleapis.com/auth/youtube',
+        //     callback: (response) => {
+        //         if (response.error) {
+        //             console.error('YouTube login failed:', response.error);
+        //             return;
+        //         }
                 
-                // Store the access token
-                sessionStorage.setItem('youtubeToken', response.access_token);
-                navigate("/user/process");
+        //         // Store the access token
+        //         sessionStorage.setItem('youtubeToken', response.access_token);
+        //         navigate("/user/process");
                 
-                // Redirect to next page
-                // window.location.href = '/next-page';
-                // OR if using React Router: navigate('/next-page');
-            }
-        });
+        //         // Redirect to next page
+        //         // window.location.href = '/next-page';
+        //         // OR if using React Router: navigate('/next-page');
+        //     }
+        // });
         
-        // Request access token
-        client.requestAccessToken();
+        // // Request access token
+        // client.requestAccessToken();
 
     }
     
