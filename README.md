@@ -11,7 +11,7 @@ Back-End: Python (Flask), SQLite
    Install dependencies after creating and activating your virtual environment: <br>```pip install Flask Flask-Cors requests spotipy google-auth google-auth-oauthlib```
 2. Download the _client_secret.json_ file and place it in the Server folder. This file contains information for the YouTube Data API and is accessed in the backend
 3. For development purposes, SQLite is used for storage. Download the **DB Browser for SQLite** app from the internet, or from the official website. Then, create a database file by selecting "create database" in the app and placing it in the Server folder
-4. Create a new client folder to use. Keep the old client folder.
+4. Create a new client folder to use. Keep the old client folder. If you want to test/view project with the old client folder, do ```npm start``` in the client folder and ```flask run``` in the server folder. You can only run the backend if you have installed the flask library in your virtual env.
 
 # Backend Routes
 <ins>Authentication</ins>
