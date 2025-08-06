@@ -2,3 +2,6 @@ server/myenv
 server/spotify.db
 server/spotify.sqbpro
 server/client_secret.json
+server/__pycache__/
+server/.cache
+server/.env

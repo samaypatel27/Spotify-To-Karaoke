@@ -18,25 +18,38 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get('http://localhost:5000/spotify/user', {
-      withCredentials: 'include'
-    })
-      .then(response => {
-        setUserLoaded(true)
-        setUser(response.data[0])
-      })
-      .catch(error => {
-        console.log(error);
-      });
 
     axios.post('http://localhost:5000/spotify/sync', {}, {
       withCredentials: 'include'
     })
       .then(response => {
-        setPlaylists(response.data);
+        console.log(response)
       })
       .catch(error => {
         console.log(error);
+      })
+
+    axios.get('http://localhost:5000/db/user', {
+      withCredentials: 'include'
+    })
+      .then(response => {
+        setUser(response.data)
+        setUserLoaded(true)
+      })
+      .catch(error => {
+        console.log(error)
+      })
+    axios.get('http://localhost:5000/db/playlists', {
+      withCredentials: 'include'
+    })
+      .then(response => {
+        console.log("NEWWWWW" + response)
+        console.log(response.data)
+        setPlaylists(response.data)
+        console.log(playlists)
+      })
+      .catch(error => {
+        console.log(error)
       })
   }, []);
 
@@ -90,7 +103,9 @@ const Dashboard = () => {
         // {
         //     query = "THIS_IS_INVALID_QUERY"
         // }
-        axios.get('http://localhost:5000/db/playlists?search=' + query)
+        axios.get('http://localhost:5000/db/playlists?search=' + query, {
+          withCredentials: 'include'
+        })
             .then(response => {
               setPlaylists(response.data)
             })
@@ -197,7 +212,7 @@ const Dashboard = () => {
                       </div>
                       <div className={style.inLine}>
                         <h1>Welcome</h1>
-                        <h1>{user.userName}</h1>
+                        <h1>{user.name}</h1>
                         <div>
                       </div>
                         
@@ -331,7 +346,7 @@ const Dashboard = () => {
                       {songs.length > 0 ? (
                         songs.map((song, index) => {
                           return (
-                            <div key={song.song_id} className="col-12 mb-2">
+                            <div key={song.id} className="col-12 mb-2">
                               <div className="d-flex align-items-center p-2 bg-light bg-opacity-25 rounded">
                                 {/* Track Number */}
                                 <div className="me-2  small" style={{minWidth: '20px'}}>
@@ -340,8 +355,8 @@ const Dashboard = () => {
                                 
                                 {/* Album Art */}
                                 <img 
-                                  src={song.song_image} 
-                                  alt={song.song_name}
+                                  src={song.image} 
+                                  alt={song.name}
                                   className="rounded me-3"
                                   width="40" 
                                   height="40"
@@ -349,12 +364,12 @@ const Dashboard = () => {
                                 
                                 {/* Song Info */}
                                 <div className="flex-grow-1 me-2">
-                                  <div className="fw-bold small">{song.song_name}</div>
-                                  <div className=" small">{song.song_artists.trim()}</div>
+                                  <div className="fw-bold small">{song.name}</div>
+                                  <div className=" small">{song.artists.trim()}</div>
                                 </div>
                                 
                                 {/* Checkbox, the value is the song name plus the artist, which will be what we will use as the searching query for now */}
-                                <input type="checkbox" value = {song.song_name + ' ' + song.song_artists.trim()} className="form-check-input songElement" onChange = {toggleSongs} defaultChecked></input>
+                                <input type="checkbox" value = {song.name + ' ' + song.artists.trim()} className="form-check-input songElement" onChange = {toggleSongs} defaultChecked></input>
                               </div>
                             </div>
                           )
