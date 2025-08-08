@@ -21,8 +21,7 @@ This can be viewed in server/models.py. There are 3 tables that will hold the in
 <ins>Authentication</ins>
 <br>
 This backend was designed so that both Spotify and YouTube sessions/cookies are sent to the browser, but it is ideal to perform the Spotify login first on the front-end
-There are FIVE variables that can be changed (All in CAPS) and is listed with the first 100 lines. The first two links below will redirect to a link specified in those variables.
-<br>
+There are THREE variables that can be changed (All in CAPS) and is listed in App.py & Spotify.py (2 in App.py and 1 in Spotify.py)
 The backend runs on PORT 5000 and the frontend runs on PORT 3000, so include http://localhost:PORT/ in API calls in the front end, and redirect links to the front end (specified in variables mentioned above)
 <br>
 **GET:**
