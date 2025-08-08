@@ -41,8 +41,7 @@ is only taken from the database. This POST route adds user data, playlist data, 
 
 **GET:**
 <br>
-```/spotify/user``` returns an array object with length 1, The object has these specific children: userName, image<br>
-(if response.data[0] represents the object, response.data.name is the username and response.data.image is the link to user's profile picture<br>
+```/db/user``` returns an object with "name" and "image", image is an image URL link<br>
 ```/db/playlists``` returns an array of objects representing each playlist. Each object has these specific children: id, name, image.<br>
    You can optinally pass a query "search", but is not required. This performs full-text search on the playlists. Example: ```/db/playlist?search=drivingplaylist```<br>
 ```/db/songs/<playlist_id>``` pass a parameter of the playlist ID (can be retrieved from the route above) and returns an array of objects representing each song. Each object has these specific children: id, name, artist, album, image (NOTE: song_artists is a string an not an array of artists)<br>
