@@ -41,14 +41,9 @@ SCOPES=[
             'https://www.googleapis.com/auth/youtube'
         ]
 
-# CHANGE THESE 5 Variables (should all be under PORT 3000 since they are frontend redirects)
-
-# Redirect after OAuth
-
+# CHANGE THESE 2 Variables (should all be under PORT 3000 since they are frontend redirects)
+# Redirect after YouTube OAuth is complete
 YOUTUBE_COMPLETE_REDIRECT = 'http://localhost:3000/user/dashboard'
-
-# Redirect if there is no session present (user is not logged in to one) will be trigger upon call of a route
-YOUTUBE_ERROR_REDIRECT = 'http://localhost:3000/user/dashboard'
 # redirect after logout of both spotify and youtube
 LOGOUT_REDIRECT = 'http://localhost:3000/'
 
@@ -63,7 +58,7 @@ app.register_blueprint(spotifyDB)
 @app.route('/auth/logout')
 def logout():
     session.clear()
-    return redirect(LOGOUT_REDIRECT)
+    return make_response("Log out successful. On front end redirect to homepage/logged out state", 303)
 
 @app.route('/youtube/login')
 def youtubeLogin():
@@ -136,7 +131,7 @@ def youtubePlaylists():
         youtube_token_info = get_youtube_token_info_object()
     except Exception as e:
         print("Not logged in to youtube")
-        return redirect(YOUTUBE_ERROR_REDIRECT)
+        return make_response(str(e), 401)
     access_token = youtube_token_info['access_token']
     # YouTube API endpoint for user's playlists
     url = "https://www.googleapis.com/youtube/v3/playlists"
@@ -321,7 +316,7 @@ def get_youtube_token_info_object():
     youtube_token_info = session.get(YOUTUBE_TOKEN_INFO, None)
 
     if not youtube_token_info:
-        raise "There is no YouTube/Google Session present"
+        raise ValueError("Youtube token does not exist. Please redirect appropriately")
 
     # Create credentials object from stored token info
     credentials = Credentials(
@@ -348,7 +343,7 @@ def get_youtube_token_info_object():
     return youtube_token_info
         
 
-# Create tables
+# Create PostegreSQL tables
 with app.app_context():
     db.create_all()
 if (__name__) == "__main__":

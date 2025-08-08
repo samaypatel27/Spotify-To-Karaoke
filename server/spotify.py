@@ -15,8 +15,9 @@ load_dotenv()
 
 spotifyDB = Blueprint('spotifyDB', __name__)
 
+# Change this single variable. This is when the Spotify OAuth is complete, the user is logged in
 SPOTIFY_COMPLETE_REDIRECT = 'http://localhost:3000/user/dashboard'
-SPOTIFY_ERROR_REDIRECT = 'http://localhost:3000/'
+
 SPOTIFY_TOKEN_INFO = "spotify_token_info"
 
 
@@ -58,8 +59,8 @@ def syncData():
     except Exception as e:
         print('You are not logged in. Redirecting...')
         return make_response(str(e), 401)
-    # first we should clear the db based on spotify_user_id if it already is in the DB
 
+    # to avoid errors if this route is called Twice (React Strict Mode feature) result of UseEffect()
     isSyncing = session.get('syncing', None)
     if isSyncing:
         return make_response("Already syncing", 200)
@@ -145,7 +146,7 @@ def syncData():
     db.session.commit()
 
     session.pop('syncing')
-    return make_response("Data Successfully Added to Database", 200)
+    return make_response("Spotify Data Successfully Synced to DB", 200)
 
 @spotifyDB.route("/db/user", methods = {'GET'})
 def getUser():
@@ -154,7 +155,6 @@ def getUser():
         "name": user.name,
         "image": user.image
     }
-    print("THIS IS THE USER: ", user.image)
     return jsonify(obj)
 
 # retrieve playlists from database
@@ -218,7 +218,7 @@ def get_spotify_token_info_object():
     # you can pass another parameter like that. If token_info doesn't exist, then session.get will just return "none"
     # this means that the user is not loggged in
     if not spotify_token_info:
-        raise ValueError("Spotify Token does not exist")
+        raise ValueError("Spotify Token does not exist. On frontend, redirect to homepage/logged out state")
         
     now = int(time.time())
     is_expired = spotify_token_info['expires_at'] - now < 60
